@@ -1,5 +1,7 @@
 package com.jme3.imgui;
 
+import com.jme3.renderer.Camera;
+import com.jme3.renderer.ViewPort;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
 import com.jme3.system.JmeSystem;
@@ -24,6 +26,7 @@ public class JmeImGui {
     public static final float DEFAULT_FPS = 1f / 60f; // 60 FPS target
 
     private JmeContext context;
+    private ViewPort viewPort;
 
     private ImGuiImplGl3 imGuiGl3;
     private ImGuiImplGles3 imGuiGles3;
@@ -31,10 +34,11 @@ public class JmeImGui {
     private boolean isAngleMode;
     private boolean initialized = false;
 
-    public void init(JmeContext context, boolean useGlfwBackend) {
+    public void init(JmeContext context, ViewPort viewPort, boolean useGlfwBackend) {
         if (!(context instanceof LwjglWindow)) {
             throw new IllegalStateException("JmeImGui requires a context of type LwjglWindow.");
         }
+        this.viewPort = viewPort;
         this.context = context;
         long windowHandle = ((LwjglWindow) context).getWindowHandle();
 
@@ -86,12 +90,17 @@ public class JmeImGui {
 
         ImGuiIO io = ImGui.getIO();
 
-        AppSettings settings = context.getSettings();
-        io.setDisplaySize(settings.getWidth(), settings.getHeight());
+        Camera cam = viewPort.getCamera();
+        int displayW = cam.getWidth();
+        int displayH = cam.getHeight();
+        io.setDisplaySize(displayW, displayH);
 
         // Framebuffer scale (monitor HiDPI/Retina)
-        float fbScaleX = 1.0f; // TODO: DisplayScaleUtils ?
-        float fbScaleY = 1.0f; // TODO: DisplayScaleUtils ?
+        float fbW = viewPort.getRenderTargetWidth();
+        float fbH = viewPort.getRenderTargetHeight();
+
+        float fbScaleX = Math.max(Math.round(fbW / displayW), 1);
+        float fbScaleY = Math.max(Math.round(fbH / displayH), 1);
         io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
 
         float tpf = context.getTimer().getTimePerFrame();

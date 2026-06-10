@@ -24,7 +24,7 @@ public class ImGuiAppState extends BaseAppState {
 
     @Override
     protected void initialize(Application app) {
-        imgui.init(app.getContext(), useGlfwBackend);
+        imgui.init(app.getContext(), app.getViewPort(), useGlfwBackend);
         app.getInputManager().addRawInputListener(input);
         app.getInputManager().addJoystickConnectionListener(input);
     }
