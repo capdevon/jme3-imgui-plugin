@@ -43,7 +43,7 @@ public class JmeImGui {
         long windowHandle = ((LwjglWindow) context).getWindowHandle();
 
         AppSettings settings = context.getSettings();
-        isAngleMode = AppSettings.ANGLE_GLES3.equals(settings.getRenderer());
+        isAngleMode = settings.getRenderer().equals("ANGLE_GLES3");
 
         ImGui.createContext();
 
@@ -176,11 +176,10 @@ public class JmeImGui {
 
     /**
      * Chooses the appropriate GLSL version string based on the operating system.
-     * Protected helper method.
      *
      * @return The GLSL version string to use.
      */
-    protected String getGlslVersion() {
+    private String getGlslVersion() {
         return JmeSystem.getPlatform().getOs() == Platform.Os.MacOS ? "#version 150" : "#version 330";
     }
 
