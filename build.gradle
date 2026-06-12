@@ -22,11 +22,6 @@ repositories {
     mavenCentral()
 }
 
-def osName = System.getProperty('os.name').toLowerCase()
-def isWindows = osName.contains('win')
-def isMac = osName.contains('mac') || osName.contains('darwin')
-def isLinux = osName.contains('linux')
-
 dependencies {
     // jMonkeyEngine
     implementation "org.jmonkeyengine:jme3-core:${jmeVersion}"
@@ -39,16 +34,9 @@ dependencies {
     implementation "io.github.spair:imgui-java-binding:${imguiVersion}"
 
     // Native libraries (multi-platform)
-    if (isWindows) {
-        runtimeOnly "io.github.spair:imgui-java-natives-windows:${imguiVersion}"
-        println "ImGui: Loaded Windows natives"
-    } else if (isLinux) {
-        runtimeOnly "io.github.spair:imgui-java-natives-linux:${imguiVersion}"
-        println "ImGui: Loaded Linux natives"
-    } else if (isMac) {
-        runtimeOnly "io.github.spair:imgui-java-natives-macos:${imguiVersion}"
-        println "ImGui: Loaded Mac natives"
-    }
+    runtimeOnly "io.github.spair:imgui-java-natives-windows:${imguiVersion}"
+    runtimeOnly "io.github.spair:imgui-java-natives-linux:${imguiVersion}"
+    runtimeOnly "io.github.spair:imgui-java-natives-macos:${imguiVersion}"
 }
 
 application {
