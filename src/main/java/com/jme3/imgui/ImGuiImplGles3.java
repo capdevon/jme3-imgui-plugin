@@ -13,8 +13,6 @@ import org.lwjgl.opengles.GLES;
 import org.lwjgl.opengles.GLESCapabilities;
 
 import java.nio.ByteBuffer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.lwjgl.opengles.GLES20.*;
 import static org.lwjgl.opengles.GLES30.*;
@@ -92,10 +90,6 @@ public class ImGuiImplGles3 {
     }
 
     public boolean init() {
-        return init(null);
-    }
-
-    public boolean init(final String glslVersion) {
 
         data = newData();
 
@@ -336,17 +330,6 @@ public class ImGuiImplGles3 {
             System.err.println(log);
         }
         return status[0] == GL_TRUE;
-    }
-
-    protected int parseGlslVersionString(final String glslVersion) {
-        final Pattern p = Pattern.compile("\\d+");
-        final Matcher m = p.matcher(glslVersion);
-
-        if (m.find()) {
-            return Integer.parseInt(m.group());
-        }
-
-        return 130;
     }
 
     protected boolean createDeviceObjects() {

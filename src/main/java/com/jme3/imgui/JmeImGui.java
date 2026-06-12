@@ -73,7 +73,7 @@ public class JmeImGui {
             imGuiGl3.newFrame();
         } else {
             imGuiGles3 = new ImGuiImplGles3();
-            imGuiGles3.init("#version 300 es");
+            imGuiGles3.init();
             imGuiGles3.newFrame();
         }
         initialized = true;
