@@ -105,16 +105,16 @@ public class JmeImGui {
         // --------------------------------------------------------------------
 
         // Framebuffer scale (monitor HiDPI/Retina)
-        float fbW = viewPort.getRenderTargetWidth();
-        float fbH = viewPort.getRenderTargetHeight();
-
-        float fbScaleX = Math.max(Math.round(fbW / displayW), 1);
-        float fbScaleY = Math.max(Math.round(fbH / displayH), 1);
-        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
-
-//        float fbScaleX = 1f;
-//        float fbScaleY = 1f;
+//        float fbW = viewPort.getRenderTargetWidth();
+//        float fbH = viewPort.getRenderTargetHeight();
+//
+//        float fbScaleX = Math.max(Math.round(fbW / displayW), 1);
+//        float fbScaleY = Math.max(Math.round(fbH / displayH), 1);
 //        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
+
+        float fbScaleX = 1f;
+        float fbScaleY = 1f;
+        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
 
         float tpf = context.getTimer().getTimePerFrame();
         if (tpf <= 0.0f) tpf = DEFAULT_FPS;
