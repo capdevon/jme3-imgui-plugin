@@ -95,6 +95,15 @@ public class JmeImGui {
         int displayH = cam.getHeight();
         io.setDisplaySize(displayW, displayH);
 
+        // --------------------------------------------------------------------
+        // jME 3.9.0-stable:
+        //     Use fixed framebuffer scale (1.0).
+        //
+        // jME 3.10+:
+        //     Uncomment the HiDPI framebuffer scale calculation below.
+        //     Comment out the fixed scale assignment.
+        // --------------------------------------------------------------------
+
         // Framebuffer scale (monitor HiDPI/Retina)
         float fbW = viewPort.getRenderTargetWidth();
         float fbH = viewPort.getRenderTargetHeight();
@@ -102,6 +111,10 @@ public class JmeImGui {
         float fbScaleX = Math.max(Math.round(fbW / displayW), 1);
         float fbScaleY = Math.max(Math.round(fbH / displayH), 1);
         io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
+
+//        float fbScaleX = 1f;
+//        float fbScaleY = 1f;
+//        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
 
         float tpf = context.getTimer().getTimePerFrame();
         if (tpf <= 0.0f) tpf = DEFAULT_FPS;
