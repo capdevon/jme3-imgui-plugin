@@ -16,6 +16,9 @@ ext {
 //    jmeVersion = '3.9.0-stable'
     jmeVersion = '3.10.0-beta1'
     imguiVersion = '1.92.0'
+
+    lwjglVersion = '3.3.6'
+    enableGLES = jmeVersion.startsWith('3.9')
 }
 
 repositories {
@@ -37,6 +40,21 @@ dependencies {
     runtimeOnly "io.github.spair:imgui-java-natives-windows:${imguiVersion}"
     runtimeOnly "io.github.spair:imgui-java-natives-linux:${imguiVersion}"
     runtimeOnly "io.github.spair:imgui-java-natives-macos:${imguiVersion}"
+
+    if (enableGLES) {
+
+        implementation "org.lwjgl:lwjgl-opengles:${lwjglVersion}"
+        implementation "org.lwjgl:lwjgl-egl:${lwjglVersion}"
+
+        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-windows"
+        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-windows-x86"
+
+        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-linux"
+        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-linux-arm64"
+
+        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-macos"
+        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-macos-arm64"
+    }
 }
 
 application {
