@@ -120,7 +120,7 @@ public class ImGuiImplGles3 {
     public void shutdown() {
         final ImGuiIO io = ImGui.getIO();
 
-        shutdownPlatformInterface();
+//        shutdownPlatformInterface();
         destroyDeviceObjects();
 
         io.setBackendRendererName(null);
@@ -247,6 +247,11 @@ public class ImGuiImplGles3 {
                 final int type = ImDrawData.sizeOfImDrawIdx() == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT;
 
                 glBindTexture(GL_TEXTURE_2D, (int) textureId);
+
+                if (vtxOffset != 0) {
+                    System.err.println("WARNING: ImGui generated VtxOffset=" + vtxOffset
+                            + " but GLES backend ignores it.");
+                }
 
 //                if (data.glVersion >= 320) {
 //                    glDrawElementsBaseVertex(GL_TRIANGLES, elemCount, type, indices, vtxOffset);
@@ -546,9 +551,9 @@ public class ImGuiImplGles3 {
         return true;
     }
 
-    protected void shutdownPlatformInterface() {
-        ImGui.destroyPlatformWindows();
-    }
+//    protected void shutdownPlatformInterface() {
+//        ImGui.destroyPlatformWindows();
+//    }
 
     protected String vertexShaderGlsl120() {
         return data.glslVersion + "\n"
