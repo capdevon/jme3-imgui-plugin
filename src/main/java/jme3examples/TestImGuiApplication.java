@@ -32,11 +32,10 @@ public class TestImGuiApplication extends SimpleApplication {
     public void simpleInitApp() {
         flyCam.setMoveSpeed(15f);
         flyCam.setDragToRotate(true);
-//        flyCam.setEnabled(false);
 
-//        viewPort.setBackgroundColor(ColorRGBA.DarkGray);
-
-        ImGuiAppState imgui = new ImGuiAppState(false);
+        // For jME 3.9.0-stable, useGlfwBackend must be set to true
+        boolean useGlfwBackend = false;
+        ImGuiAppState imgui = new ImGuiAppState(useGlfwBackend);
         stateManager.attach(imgui);
 
         imgui.getManager().addWindow(new TestWindow());
