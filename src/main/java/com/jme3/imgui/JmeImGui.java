@@ -17,6 +17,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Core manager for Dear ImGui inside the jMonkeyEngine rendering lifecycle.
+ * Handles context bootstrap, multi-backend abstraction (GL3 vs ANGLE GLES3),
+ * frame sizing calculations, and viewport rendering.
+ *
  * @author capdevon
  */
 public class JmeImGui {
@@ -59,6 +63,7 @@ public class JmeImGui {
 
         ImGuiTheme.apply(ImGuiTheme.Theme.CLASSIC);
 
+        // Bootstrap requested windowing abstractions
         if (useGlfwBackend) {
             platformBackend = new ImGuiGlfwBackend();
             platformBackend.init(windowHandle);
@@ -67,6 +72,7 @@ public class JmeImGui {
             logger.log(Level.INFO, "ImGui: Using custom JmeImGuiInput (no platform backend)");
         }
 
+        // Bootstrap appropriate rendering pipeline based on jME platform configuration
         if (!isAngleMode) {
             imGuiGl3 = new ImGuiImplGl3();
             imGuiGl3.init(getGlslVersion());
@@ -116,6 +122,7 @@ public class JmeImGui {
         float fbScaleY = 1f;
         io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
 
+        // Delta time handling with strict bounds check to prevent UI jumps
         float tpf = context.getTimer().getTimePerFrame();
         if (tpf <= 0.0f) tpf = DEFAULT_FPS;
         io.setDeltaTime(Math.min(tpf, 0.1f));
@@ -138,6 +145,7 @@ public class JmeImGui {
         try {
             ImGui.render();
 
+            // Delegate draw calls to target hardware interface pipeline
             if (!isAngleMode) {
                 imGuiGl3.renderDrawData(ImGui.getDrawData());
             } else {
@@ -196,6 +204,11 @@ public class JmeImGui {
         return JmeSystem.getPlatform().getOs() == Platform.Os.MacOS ? "#version 150" : "#version 330";
     }
 
+    /**
+     * Checks if the ImGui management instance is up and running.
+     *
+     * @return True if initialized and safe to push draw frames.
+     */
     public boolean isInitialized() {
         return initialized;
     }

@@ -3,6 +3,9 @@ package com.jme3.imgui;
 import imgui.glfw.ImGuiImplGlfw;
 
 /**
+ * Platform backend implementation using GLFW.
+ * Used when multi-viewport rendering or standard desktop windowing hooks are enabled.
+ *
  * @author capdevon
  */
 public class ImGuiGlfwBackend implements ImGuiPlatformBackend {
@@ -11,7 +14,8 @@ public class ImGuiGlfwBackend implements ImGuiPlatformBackend {
 
     @Override
     public void init(long windowHandle) {
-        boolean installCallbacks = false; // Let jME handle input callbacks
+        // Let jME handle its own window/input callbacks.
+        boolean installCallbacks = false;
         glfw.init(windowHandle, installCallbacks);
     }
 
