@@ -22,7 +22,7 @@ public class TestWindow extends ImGuiWindow {
 
     @Override
     public void render() {
-//        ImGui.setNextWindowPos(100, 100);
+        ImGui.setNextWindowPos(10, 10);
 //        ImGui.setNextWindowSize(400, 200);
 
         if (ImGui.begin(getId())) {
