@@ -25,7 +25,7 @@ A Dear ImGui integration plugin for jMonkeyEngine 3, providing fast and flexible
 
 Since this plugin is currently in development (`1.0.0-SNAPSHOT`), you need to build and install it to your local Maven repository (`.m2`) before using it in your projects.
 
-### Gradle (Groovy)
+###  Gradle (Groovy) inside your Project:
 
 ```groovy
 repositories {
@@ -35,6 +35,11 @@ repositories {
 
 dependencies {
     implementation 'com.jme3.imgui:jme3-imgui-plugin:1.0.0-SNAPSHOT'
+
+    // Add only the ones you need, or keep all three for cross-platform desktop support:
+    runtimeOnly "io.github.spair:imgui-java-natives-windows:1.92.0"
+    runtimeOnly "io.github.spair:imgui-java-natives-linux:1.92.0"
+    runtimeOnly "io.github.spair:imgui-java-natives-macos:1.92.0"
 }
 ```
 
