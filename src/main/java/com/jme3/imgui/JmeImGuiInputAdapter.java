@@ -16,6 +16,10 @@ import imgui.flag.ImGuiKey;
 import java.util.logging.Logger;
 
 /**
+ * Bridges jMonkeyEngine raw input events with the Dear ImGui input pipeline.
+ * Maps mouse, keyboard, and layout state coordinates, while routing input consumption (sinking)
+ * when ImGui panels intercept focus.
+ *
  * @author capdevon
  */
 public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectionListener {
@@ -45,6 +49,7 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
     @Override
     public void onMouseMotionEvent(MouseMotionEvent evt) {
         ImGuiIO io = ImGui.getIO();
+        // Invert Y coordinate since jME template layout starts bottom-left, while ImGui expects top-left.
         io.addMousePosEvent(evt.getX(), io.getDisplaySizeY() - evt.getY());
 
         if (evt.getDeltaWheel() != 0) {
@@ -70,53 +75,59 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
     public void onKeyEvent(KeyInputEvent evt) {
         ImGuiIO io = ImGui.getIO();
 
-        int imguiKey = mapKey(evt.getKeyCode());
+        // 1. Update modifier keys (CTRL, SHIFT, ALT, SUPER) to guarantee reliable shortcuts
+        updateModifiers(io, evt);
 
+        // 2. Route standard keys
+        int imguiKey = mapKey(evt.getKeyCode());
         if (imguiKey != ImGuiKey.None) {
             io.addKeyEvent(imguiKey, evt.isPressed());
         }
 
+        // 3. Process text character streaming (ignore invalid/action keys)
         if (evt.isPressed()) {
             char c = evt.getKeyChar();
-
             if (c > 0 && c != 65535) {
                 io.addInputCharacter(c);
             }
         }
-
-//        updateModifiers(io); // FIXME
 
         if (io.getWantCaptureKeyboard()) {
             evt.setConsumed();
         }
     }
 
-//    private static void updateModifiers(ImGuiIO io) {
-//        io.addKeyEvent(
-//                ImGuiKey.ImGuiMod_Ctrl,
-//                io.getKeysDown(ImGuiKey.LeftCtrl)
-//                        || io.getKeysDown(ImGuiKey.RightCtrl)
-//        );
-//
-//        io.addKeyEvent(
-//                ImGuiKey.ImGuiMod_Shift,
-//                io.getKeysDown(ImGuiKey.LeftShift)
-//                        || io.getKeysDown(ImGuiKey.RightShift)
-//        );
-//
-//        io.addKeyEvent(
-//                ImGuiKey.ImGuiMod_Alt,
-//                io.getKeysDown(ImGuiKey.LeftAlt)
-//                        || io.getKeysDown(ImGuiKey.RightAlt)
-//        );
-//
-//        io.addKeyEvent(
-//                ImGuiKey.ImGuiMod_Super,
-//                io.getKeysDown(ImGuiKey.LeftSuper)
-//                        || io.getKeysDown(ImGuiKey.RightSuper)
-//        );
-//    }
+    /**
+     * Synchronizes modifier structural combination flags inside ImGui.
+     * Maps jME keycodes directly to systemic modifier statuses during the processing frame.
+     */
+    private static void updateModifiers(ImGuiIO io, KeyInputEvent evt) {
+        int keyCode = evt.getKeyCode();
+        boolean isPressed = evt.isPressed();
 
+        switch (keyCode) {
+            case com.jme3.input.KeyInput.KEY_LCONTROL:
+            case com.jme3.input.KeyInput.KEY_RCONTROL:
+                io.addKeyEvent(ImGuiKey.ImGuiMod_Ctrl, isPressed);
+                break;
+            case com.jme3.input.KeyInput.KEY_LSHIFT:
+            case com.jme3.input.KeyInput.KEY_RSHIFT:
+                io.addKeyEvent(ImGuiKey.ImGuiMod_Shift, isPressed);
+                break;
+            case com.jme3.input.KeyInput.KEY_LMENU:
+            case com.jme3.input.KeyInput.KEY_RMENU:
+                io.addKeyEvent(ImGuiKey.ImGuiMod_Alt, isPressed);
+                break;
+            case com.jme3.input.KeyInput.KEY_LMETA: // Windows/Super Key
+            case com.jme3.input.KeyInput.KEY_RMETA:
+                io.addKeyEvent(ImGuiKey.ImGuiMod_Super, isPressed);
+                break;
+        }
+    }
+
+    /**
+     * Translates jMonkeyEngine engine-level keycodes into Dear ImGui key parameters.
+     */
     private static int mapKey(int key) {
 
         switch (key) {
@@ -206,6 +217,9 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
         return ImGuiKey.None;
     }
 
+    /**
+     * Dispatches window focus updates to ImGui internals.
+     */
     public void setFocused(boolean focused) {
         ImGui.getIO().addFocusEvent(focused);
     }
