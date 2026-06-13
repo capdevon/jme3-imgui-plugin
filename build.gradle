@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'application'
+    id 'maven-publish'
 }
 
 group = 'com.jme3.imgui'
@@ -10,6 +11,8 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 ext {
@@ -63,4 +66,24 @@ application {
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId = project.name
+        }
+    }
+}
+
+tasks.register('install') {
+    group = 'publishing'
+    description = 'Installs the plugin to the local Maven repository.'
+
+    dependsOn tasks.named('publishToMavenLocal')
+
+    doLast {
+        println "\n[SUCCESS] ${project.name}:${project.version} installed to Maven Local."
+    }
 }
