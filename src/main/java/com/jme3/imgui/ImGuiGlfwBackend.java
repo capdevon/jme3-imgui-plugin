@@ -9,7 +9,6 @@ import org.lwjgl.glfw.GLFW;
 
 /**
  * Platform backend implementation using GLFW.
- * Used when multi-viewport rendering or standard desktop windowing hooks are enabled.
  *
  * @author capdevon
  */

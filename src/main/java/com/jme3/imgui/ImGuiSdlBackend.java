@@ -4,7 +4,6 @@ import imgui.sdl3.ImGuiImplSdl3;
 
 /**
  * Platform backend implementation using SDL3.
- * Bridges SDL3 native runtime contexts with the ImGui frame cycle.
  *
  * @author capdevon
  */
