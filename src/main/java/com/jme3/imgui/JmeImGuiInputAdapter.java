@@ -26,6 +26,8 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
 
     private static final Logger logger = Logger.getLogger(JmeImGuiInputAdapter.class.getName());
 
+    private static final float MOUSE_WHEEL_SCALE = 0.25f;
+
     @Override
     public void beginInput() {
     }
@@ -53,7 +55,7 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
         io.addMousePosEvent(evt.getX(), io.getDisplaySizeY() - evt.getY());
 
         if (evt.getDeltaWheel() != 0) {
-            io.addMouseWheelEvent(0.0f, evt.getDeltaWheel());
+            io.addMouseWheelEvent(0.0f, evt.getDeltaWheel() * MOUSE_WHEEL_SCALE);
         }
 
         if (io.getWantCaptureMouse()) {
@@ -87,7 +89,7 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
         // 3. Process text character streaming (ignore invalid/action keys)
         if (evt.isPressed()) {
             char c = evt.getKeyChar();
-            if (c > 0 && c != 65535) {
+            if (c > 0 && c != 65535 && !Character.isISOControl(c)) {
                 io.addInputCharacter(c);
             }
         }
@@ -109,18 +111,22 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
             case com.jme3.input.KeyInput.KEY_LCONTROL:
             case com.jme3.input.KeyInput.KEY_RCONTROL:
                 io.addKeyEvent(ImGuiKey.ImGuiMod_Ctrl, isPressed);
+//                io.setKeyCtrl(isPressed);
                 break;
             case com.jme3.input.KeyInput.KEY_LSHIFT:
             case com.jme3.input.KeyInput.KEY_RSHIFT:
                 io.addKeyEvent(ImGuiKey.ImGuiMod_Shift, isPressed);
+//                io.setKeyShift(isPressed);
                 break;
             case com.jme3.input.KeyInput.KEY_LMENU:
             case com.jme3.input.KeyInput.KEY_RMENU:
                 io.addKeyEvent(ImGuiKey.ImGuiMod_Alt, isPressed);
+//                io.setKeyAlt(isPressed);
                 break;
             case com.jme3.input.KeyInput.KEY_LMETA: // Windows/Super Key
             case com.jme3.input.KeyInput.KEY_RMETA:
                 io.addKeyEvent(ImGuiKey.ImGuiMod_Super, isPressed);
+//                io.setKeySuper(isPressed);
                 break;
         }
     }
