@@ -35,7 +35,7 @@ public class ImGuiManager {
         windows.remove(window);
     }
 
-    public void render(JmeImGui imGui) {
+    protected void render(JmeImGui imGui) {
         imGui.startFrame();
 
         for (ImGuiWindow window : windows) {
