@@ -36,6 +36,7 @@ public class JmeImGui {
     private ImGuiImplGles3 imGuiGles3;
     private ImGuiPlatformBackend platformBackend;
     private boolean isAngleMode;
+    private boolean viewportsEnabled = false;
     private boolean initialized = false;
 
     public void init(JmeContext context, ViewPort viewPort, boolean useGlfwBackend) {
@@ -57,6 +58,7 @@ public class JmeImGui {
         io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         if (useGlfwBackend) {
             io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
+            viewportsEnabled = true;
         }
 
         io.getFonts().build();
@@ -154,7 +156,7 @@ public class JmeImGui {
 
             // TODO: not ported — multi-viewport (ImGui_ImplSDL3_InitMultiViewportSupport) requires C function pointers.
             // Optional handling for multiple viewports (if enabled in IO flags)
-            if (platformBackend != null && ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+            if (platformBackend != null && viewportsEnabled) {
                 final long backupWindowPtr = GLFW.glfwGetCurrentContext();
                 ImGui.updatePlatformWindows();
                 ImGui.renderPlatformWindowsDefault();
