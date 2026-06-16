@@ -26,7 +26,7 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
 
     private static final Logger logger = Logger.getLogger(JmeImGuiInputAdapter.class.getName());
 
-    private static final float MOUSE_WHEEL_SCALE = 0.25f;
+    private static final float MOUSE_WHEEL_SCALE = 120;
 
     @Override
     public void beginInput() {
@@ -55,7 +55,7 @@ public class JmeImGuiInputAdapter implements RawInputListener, JoystickConnectio
         io.addMousePosEvent(evt.getX(), io.getDisplaySizeY() - evt.getY());
 
         if (evt.getDeltaWheel() != 0) {
-            io.addMouseWheelEvent(0.0f, evt.getDeltaWheel() * MOUSE_WHEEL_SCALE);
+            io.addMouseWheelEvent(0.0f, evt.getDeltaWheel() / MOUSE_WHEEL_SCALE);
         }
 
         if (io.getWantCaptureMouse()) {
