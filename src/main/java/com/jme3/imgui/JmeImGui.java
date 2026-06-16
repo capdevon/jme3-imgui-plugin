@@ -27,7 +27,7 @@ public class JmeImGui {
 
     private static final Logger logger = Logger.getLogger(JmeImGui.class.getName());
 
-    public static final float DEFAULT_FPS = 1f / 60f; // 60 FPS target
+    private static final float DEFAULT_FPS = 1f / 60f; // 60 FPS target
 
     private JmeContext context;
     private ViewPort viewPort;
