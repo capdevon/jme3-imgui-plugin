@@ -4,7 +4,7 @@ plugins {
     id 'maven-publish'
 }
 
-group = 'com.jme3.imgui'
+group = 'com.github.capdevon'
 version = '1.0.0-SNAPSHOT'
 
 java {
@@ -84,6 +84,6 @@ tasks.register('install') {
     dependsOn tasks.named('publishToMavenLocal')
 
     doLast {
-        println "\n[SUCCESS] ${project.name}:${project.version} installed to Maven Local."
+        println "\n[SUCCESS] ${project.group}:${project.name}:${project.version} installed to Maven Local."
     }
 }
