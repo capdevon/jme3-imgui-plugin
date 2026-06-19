@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.jme3.imgui:jme3-imgui-plugin:1.0.0-SNAPSHOT'
+    implementation 'com.github.capdevon:jme3-imgui-plugin:1.0.0-SNAPSHOT'
 
     // Add only the ones you need, or keep all three for cross-platform desktop support:
     runtimeOnly "io.github.spair:imgui-java-natives-windows:1.92.0"
