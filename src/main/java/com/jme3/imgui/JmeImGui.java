@@ -1,5 +1,6 @@
 package com.jme3.imgui;
 
+import com.jme3.app.Application;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.system.AppSettings;
@@ -28,6 +29,7 @@ public class JmeImGui {
     private static final Logger logger = Logger.getLogger(JmeImGui.class.getName());
 
     private static final float DEFAULT_FPS = 1f / 60f; // 60 FPS target
+    private static final String ANGLE_GLES = "ANGLE_GLES3";
 
     private JmeContext context;
     private ViewPort viewPort;
@@ -38,7 +40,25 @@ public class JmeImGui {
     private boolean isAngleMode;
     private boolean initialized = false;
 
-    public void init(JmeContext context, ViewPort viewPort, boolean useGlfwBackend) {
+    /**
+     * Initializes ImGui using custom configuration and the application's GUI ViewPort.
+     *
+     * @param app the jME application instance
+     * @param cfg configuration options for ImGui initialization
+     */
+    public void init(Application app, JmeImGuiConfig cfg) {
+        init(app.getContext(), app.getGuiViewPort(), cfg);
+    }
+
+    /**
+     * Initializes ImGui context, input backend, and renderer interface.
+     *
+     * @param context  the jME context (must be an instance of {@link LwjglWindow})
+     * @param viewPort the main viewport for display metrics
+     * @param cfg      configuration options for ImGui initialization
+     * @throws IllegalStateException if the context is not an instance of {@link LwjglWindow}
+     */
+    public void init(JmeContext context, ViewPort viewPort, JmeImGuiConfig cfg) {
         if (!(context instanceof LwjglWindow)) {
             throw new IllegalStateException("JmeImGui requires a context of type LwjglWindow.");
         }
@@ -47,24 +67,28 @@ public class JmeImGui {
         long windowHandle = ((LwjglWindow) context).getWindowHandle();
 
         AppSettings settings = context.getSettings();
-        isAngleMode = settings.getRenderer().equals("ANGLE_GLES3");
+        isAngleMode = settings.getRenderer().equals(ANGLE_GLES);
 
         ImGui.createContext();
 
         ImGuiIO io = ImGui.getIO();
-        io.setIniFilename(null);
+        io.setIniFilename(cfg.getIniFilename());
 
-        io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
-        if (useGlfwBackend) {
+        if (cfg.isEnableDocking()) {
+            io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
+        }
+        if (cfg.isUseGlfwBackend() && cfg.isEnableViewports()) {
             io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         }
 
         io.getFonts().build();
 
-        ImGuiTheme.apply(ImGuiTheme.Theme.CLASSIC);
+        if (cfg.getTheme() != null) {
+            ImGuiTheme.apply(cfg.getTheme());
+        }
 
         // Bootstrap requested windowing abstractions
-        if (useGlfwBackend) {
+        if (cfg.isUseGlfwBackend()) {
             platformBackend = new ImGuiGlfwBackend();
             platformBackend.init(windowHandle);
             logger.log(Level.INFO, "ImGui: Using GLFW Platform Backend");
@@ -196,7 +220,7 @@ public class JmeImGui {
     }
 
     /**
-     * Chooses the appropriate GLSL version string based on the operating system.
+     * Determines the appropriate GLSL version string based on the current OS.
      *
      * @return The GLSL version string to use.
      */
@@ -205,9 +229,9 @@ public class JmeImGui {
     }
 
     /**
-     * Checks if the ImGui management instance is up and running.
+     * Checks if ImGui has been successfully initialized.
      *
-     * @return True if initialized and safe to push draw frames.
+     * @return {@code true} if initialized; {@code false} otherwise
      */
     public boolean isInitialized() {
         return initialized;
