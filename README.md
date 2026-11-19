@@ -5,7 +5,7 @@
 [![Dear ImGui](https://img.shields.io/badge/Dear%20ImGui-1.92.0-brightgreen.svg)](https://github.com/ocornut/imgui)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
-A Dear ImGui integration plugin for jMonkeyEngine 3, providing fast and flexible immediate-mode user interfaces for debugging, tooling, and editor development.
+An [ImGui-Java](https://github.com/SpaiR/imgui-java) integration plugin for [jMonkeyEngine3](https://jmonkeyengine.org/), providing fast and flexible immediate-mode user interfaces for debugging, tooling, and editor development.
 
 ## 🚀 Features
 
@@ -34,7 +34,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.jme3.imgui:jme3-imgui-plugin:1.0.0-SNAPSHOT'
+    implementation 'com.github.capdevon:jme3-imgui-plugin:1.0.0-SNAPSHOT'
 
     // Add only the ones you need, or keep all three for cross-platform desktop support:
     runtimeOnly "io.github.spair:imgui-java-natives-windows:1.92.0"
