@@ -39,10 +39,9 @@ public class ImGuiManager {
         imGui.startFrame();
         try {
             for (ImGuiWindow window : windows) {
-                if (!window.isVisible()) {
-                    continue;
+                if (window.isVisible()) {
+                    window.render();
                 }
-                window.render();
             }
         } finally {
             imGui.endFrame();
