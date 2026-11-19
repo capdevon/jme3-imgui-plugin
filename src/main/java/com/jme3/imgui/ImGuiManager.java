@@ -37,14 +37,15 @@ public class ImGuiManager {
 
     protected void render(JmeImGui imGui) {
         imGui.startFrame();
-
-        for (ImGuiWindow window : windows) {
-            if (!window.isVisible()) {
-                continue;
+        try {
+            for (ImGuiWindow window : windows) {
+                if (!window.isVisible()) {
+                    continue;
+                }
+                window.render();
             }
-            window.render();
+        } finally {
+            imGui.endFrame();
         }
-
-        imGui.endFrame();
     }
 }
