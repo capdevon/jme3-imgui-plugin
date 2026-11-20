@@ -36,7 +36,7 @@ public class ImGuiAppState extends BaseAppState {
     protected void initialize(Application app) {
         // Bootstrap ImGui context and graphics pipeline
         imgui = new JmeImGui();
-        imgui.init(app.getContext(), app.getGuiViewPort(), cfg);
+        imgui.init(app.getContext(), cfg);
         this.inputManager = app.getInputManager();
     }
 

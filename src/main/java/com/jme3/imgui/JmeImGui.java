@@ -1,7 +1,5 @@
 package com.jme3.imgui;
 
-import com.jme3.renderer.Camera;
-import com.jme3.renderer.ViewPort;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
 import com.jme3.system.JmeSystem;
@@ -27,8 +25,6 @@ public class JmeImGui {
 
     private static final Logger logger = Logger.getLogger(JmeImGui.class.getName());
 
-    private ViewPort viewPort;
-
     private ImGuiContext context;
     private ImGuiImplGl3 imGuiGl3;
     private ImGuiImplGles3 imGuiGles3;
@@ -40,14 +36,12 @@ public class JmeImGui {
      * Initializes ImGui context, input backend, and renderer interface.
      *
      * @param jmeContext the jME context (must be an instance of {@link LwjglWindow})
-     * @param viewPort   the main viewport for display metrics
      * @param cfg        configuration options for ImGui initialization
      */
-    public void init(JmeContext jmeContext, ViewPort viewPort, JmeImGuiConfig cfg) {
+    public void init(JmeContext jmeContext, JmeImGuiConfig cfg) {
         if (initialized) {
             throw new IllegalStateException("JmeImGui is already initialized");
         }
-        this.viewPort = viewPort;
 
         // Bootstrap requested windowing abstractions
         LwjglWindow window = (LwjglWindow) jmeContext;
@@ -120,10 +114,6 @@ public class JmeImGui {
             imGuiGl3.newFrame();
         }
         platformBackend.newFrame();
-
-        Camera cam = viewPort.getCamera();
-        ImGui.getIO().setDisplaySize(cam.getWidth(), cam.getHeight());
-
         ImGui.newFrame();
     }
 

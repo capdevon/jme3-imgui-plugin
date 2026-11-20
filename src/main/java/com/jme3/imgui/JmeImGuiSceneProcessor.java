@@ -26,8 +26,6 @@ public class JmeImGuiSceneProcessor implements SceneProcessor {
 
     private JmeContext context;
     private InputManager inputManager;
-    private RenderManager renderManager;
-    private ViewPort vp;
     private boolean initialized = false;
     private boolean enabled = true;
 
@@ -55,8 +53,6 @@ public class JmeImGuiSceneProcessor implements SceneProcessor {
 
     @Override
     public void initialize(RenderManager rm, ViewPort vp) {
-        this.renderManager = rm;
-        this.vp = vp;
         this.initialized = true;
 
         if (isEnabled()) {
@@ -85,11 +81,7 @@ public class JmeImGuiSceneProcessor implements SceneProcessor {
             return;
         }
 
-        int w = vp.getCamera().getWidth();
-        int h = vp.getCamera().getHeight();
-
         renderer.newFrame();
-        ImGui.getIO().setDisplaySize(w, h);
         ImGui.newFrame();
 
         try {
