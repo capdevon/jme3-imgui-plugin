@@ -1,7 +1,7 @@
 # jme3-imgui-plugin
 
 [![Java Version](https://img.shields.io/badge/Java-17%2B-orange.svg)](https://www.oracle.com/java/technologies/)
-[![jMonkeyEngine](https://img.shields.io/badge/jMonkeyEngine-3.10.0--beta1-blue.svg)](https://jmonkeyengine.org/)
+[![jMonkeyEngine](https://img.shields.io/badge/jMonkeyEngine-3.10.0--beta3-blue.svg)](https://jmonkeyengine.org/)
 [![Dear ImGui](https://img.shields.io/badge/Dear%20ImGui-1.92.0-brightgreen.svg)](https://github.com/ocornut/imgui)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
@@ -10,7 +10,7 @@ An [ImGui-Java](https://github.com/SpaiR/imgui-java) integration plugin for [jMo
 ## 🚀 Features
 
 * **Multi-Platform Support:** Pre-configured native bindings for Windows, Linux, and macOS.
-* **Modern Pipeline:** Optimized for **jME 3.9.0+** and **LWJGL3** backends.
+* **Modern Pipeline:** Optimized for **jME 3.10.0+** and **LWJGL3** backends.
 * **Low Overhead:** Native performance, ideal for real-time diagnostics, inspector panels, and developer consoles.
 
 ## Prerequisites & Compatibility
@@ -18,7 +18,7 @@ An [ImGui-Java](https://github.com/SpaiR/imgui-java) integration plugin for [jMo
 | Component | Target Version |
 | :--- |:---------------|
 | **Java JDK** | `17+`          |
-| **jMonkeyEngine** | `3.9.0+`       |
+| **jMonkeyEngine** | `3.10.0+`      |
 | **Dear ImGui** | `1.92.0`       |
 
 ## 📦 Installation & Local Setup
