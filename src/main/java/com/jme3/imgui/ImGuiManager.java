@@ -35,6 +35,11 @@ public class ImGuiManager {
         windows.remove(window);
     }
 
+    /**
+     * Renders all registered windows in the order they were added.
+     *
+     * @param imGui The {@link JmeImGui} instance managing the ImGui context.
+     */
     protected void render(JmeImGui imGui) {
         imGui.startFrame();
         try {
