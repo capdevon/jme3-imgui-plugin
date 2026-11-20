@@ -1,7 +1,10 @@
 package com.jme3.imgui;
 
 import com.jme3.system.lwjgl.LwjglWindow;
+import imgui.ImGui;
+import imgui.flag.ImGuiConfigFlags;
 import imgui.glfw.ImGuiImplGlfw;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * Platform backend implementation using GLFW.
@@ -39,4 +42,21 @@ class ImGuiGlfwBackend implements ImGuiPlatformBackend {
     public void dispose() {
         glfw.shutdown();
     }
+
+    @Override
+    public boolean supportsViewports() {
+        return true;
+    }
+
+    @Override
+    public void renderPlatformWindows() {
+        // Optional handling for multiple viewports (if enabled in IO flags)
+        if (ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+            final long backupWindowPtr = GLFW.glfwGetCurrentContext();
+            ImGui.updatePlatformWindows();
+            ImGui.renderPlatformWindowsDefault();
+            GLFW.glfwMakeContextCurrent(backupWindowPtr);
+        }
+    }
+
 }

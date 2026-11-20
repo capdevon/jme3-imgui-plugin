@@ -41,7 +41,6 @@ public class ImGuiAppState extends BaseAppState {
         // Bootstrap ImGui context and graphics pipeline
         JmeImGuiConfig cfg = new JmeImGuiConfig();
         cfg.setUseGlfwBackend(useGlfwBackend);
-        cfg.setEnableViewports(useGlfwBackend);
 
         imgui.init(app, cfg);
         this.inputManager = app.getInputManager();

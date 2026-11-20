@@ -25,4 +25,18 @@ public interface ImGuiPlatformBackend {
      * releases any mapped native OS resources.
      */
     void dispose();
+
+    /**
+     * Whether this backend can drive ImGui multi-viewport (platform windows).
+     */
+    default boolean supportsViewports() {
+        return false;
+    }
+
+    /**
+     * Renders secondary platform windows, if ViewportsEnable is active.
+     * Called after the main draw data.
+     */
+    default void renderPlatformWindows() {
+    }
 }

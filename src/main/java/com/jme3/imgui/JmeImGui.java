@@ -12,7 +12,6 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -191,13 +190,9 @@ public class JmeImGui {
                 imGuiGl3.renderDrawData(ImGui.getDrawData());
             }
 
-            // TODO: not ported — multi-viewport (ImGui_ImplSDL3_InitMultiViewportSupport) requires C function pointers.
-            // Optional handling for multiple viewports (if enabled in IO flags)
-            if (platformBackend instanceof ImGuiGlfwBackend && ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
-                final long backupWindowPtr = GLFW.glfwGetCurrentContext();
-                ImGui.updatePlatformWindows();
-                ImGui.renderPlatformWindowsDefault();
-                GLFW.glfwMakeContextCurrent(backupWindowPtr);
+            if (platformBackend.supportsViewports()) {
+                // TODO: not ported — multi-viewport (ImGui_ImplSDL3_InitMultiViewportSupport) requires C function pointers.
+                platformBackend.renderPlatformWindows();
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
@@ -214,13 +209,12 @@ public class JmeImGui {
         }
 
         try {
-            platformBackend.dispose();
-
             if (isAngleMode) {
                 imGuiGles3.shutdown();
             } else {
                 imGuiGl3.shutdown();
             }
+            platformBackend.dispose();
             ImGui.destroyContext();
 
             initialized = false;

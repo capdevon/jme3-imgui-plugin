@@ -7,7 +7,7 @@ public class JmeImGuiConfig {
 
     private boolean useGlfwBackend = false;
     private boolean enableDocking = true;
-    private boolean enableViewports = false;
+    private boolean enableViewports = true;
     private String iniFilename = null; // null disables .ini persistence
     private ImGuiTheme.Theme theme = ImGuiTheme.Theme.CLASSIC;
 
