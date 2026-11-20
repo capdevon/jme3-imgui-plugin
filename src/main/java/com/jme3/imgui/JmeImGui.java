@@ -36,7 +36,7 @@ public class JmeImGui {
     private ImGuiImplGl3 imGuiGl3;
     private ImGuiImplGles3 imGuiGles3;
     private ImGuiPlatformBackend platformBackend;
-    private boolean isAngleMode;
+    private boolean useGles3Renderer;
     private boolean initialized = false;
 
     /**
@@ -64,15 +64,39 @@ public class JmeImGui {
         this.viewPort = viewPort;
         this.context = context;
 
-        ImGui.createContext();
+        // Bootstrap requested windowing abstractions
+        LwjglWindow window = (LwjglWindow) context;
 
+        if (cfg.isUseGlfwBackend()) {
+            platformBackend = new ImGuiGlfwBackend(window);
+            logger.log(Level.INFO, "ImGui: Using GLFW Platform Backend");
+        } else {
+            platformBackend = new ImGuiSdlBackend(window);
+            logger.log(Level.INFO, "ImGui: Using SDL3 Platform Backend");
+
+            AppSettings settings = context.getSettings();
+            useGles3Renderer = settings.getRenderer().equals(ANGLE_GLES);
+        }
+
+        ImGui.createContext();
+        applyConfig(cfg);
+        platformBackend.init();
+        initImGuiRenderer();
+        initialized = true;
+    }
+
+    private void applyConfig(JmeImGuiConfig cfg) {
         ImGuiIO io = ImGui.getIO();
         io.setIniFilename(cfg.getIniFilename());
+
+        // Let frame exceptions reach the host instead of imgui-java calling System.exit(1)
+        // on error-recovery assertions.
+        io.setConfigErrorRecoveryEnableAssert(false);
 
         if (cfg.isEnableDocking()) {
             io.addConfigFlags(ImGuiConfigFlags.DockingEnable);
         }
-        if (cfg.isUseGlfwBackend() && cfg.isEnableViewports()) {
+        if (cfg.isEnableViewports() && platformBackend.supportsViewports()) {
             io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         }
 
@@ -81,30 +105,11 @@ public class JmeImGui {
         if (cfg.getTheme() != null) {
             ImGuiTheme.apply(cfg.getTheme());
         }
-
-        // Bootstrap requested windowing abstractions
-        LwjglWindow window = (LwjglWindow) context;
-
-        if (cfg.isUseGlfwBackend()) {
-            platformBackend = new ImGuiGlfwBackend(window);
-            platformBackend.init();
-            logger.log(Level.INFO, "ImGui: Using GLFW Platform Backend");
-        } else {
-            platformBackend = new ImGuiSdlBackend(window);
-            platformBackend.init();
-            logger.log(Level.INFO, "ImGui: Using SDL3 Platform Backend");
-
-            AppSettings settings = context.getSettings();
-            isAngleMode = settings.getRenderer().equals(ANGLE_GLES);
-        }
-
-        initImGuiRenderer();
-        initialized = true;
     }
 
     private void initImGuiRenderer() {
         // Bootstrap appropriate rendering pipeline based on jME platform configuration
-        if (isAngleMode) {
+        if (useGles3Renderer) {
             imGuiGles3 = new ImGuiImplGles3();
             if (!imGuiGles3.init()) {
                 throw new IllegalStateException("Dear ImGui OpenGL ES 3 renderer backend failed to initialize");
@@ -126,7 +131,7 @@ public class JmeImGui {
             return;
         }
 
-        if (isAngleMode) {
+        if (useGles3Renderer) {
             imGuiGles3.newFrame();
         } else {
             imGuiGl3.newFrame();
@@ -157,9 +162,9 @@ public class JmeImGui {
 //        float fbScaleY = Math.max(Math.round(fbH / displayH), 1);
 //        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
 
-        float fbScaleX = 1f;
-        float fbScaleY = 1f;
-        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
+//        float fbScaleX = 1f;
+//        float fbScaleY = 1f;
+//        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
 
         // Delta time handling with strict bounds check to prevent UI jumps
         float tpf = context.getTimer().getTimePerFrame();
@@ -184,7 +189,7 @@ public class JmeImGui {
             ImGui.render();
 
             // Delegate draw calls to target hardware interface pipeline
-            if (isAngleMode) {
+            if (useGles3Renderer) {
                 imGuiGles3.renderDrawData(ImGui.getDrawData());
             } else {
                 imGuiGl3.renderDrawData(ImGui.getDrawData());
@@ -209,7 +214,7 @@ public class JmeImGui {
         }
 
         try {
-            if (isAngleMode) {
+            if (useGles3Renderer) {
                 imGuiGles3.shutdown();
             } else {
                 imGuiGl3.shutdown();
