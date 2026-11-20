@@ -2,6 +2,10 @@ package jme3examples;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.imgui.ImGuiAppState;
+import com.jme3.imgui.JmeImGuiConfig;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
@@ -35,17 +39,25 @@ public class TestImGuiApplication extends SimpleApplication {
         flyCam.setDragToRotate(true);
 
         // For jME 3.9.0-stable, useGlfwBackend must be set to true
-        boolean useGlfwBackend = false;
-        ImGuiAppState imgui = new ImGuiAppState(useGlfwBackend);
-        stateManager.attach(imgui);
+        JmeImGuiConfig cfg = new JmeImGuiConfig();
+//        cfg.setUseGlfwBackend(true);
 
-        imgui.getManager().addWindow(new TestWindow());
+        ImGuiAppState imGuiState = new ImGuiAppState(cfg);
+        stateManager.attach(imGuiState);
+
+        imGuiState.addWindow(new TestWindow());
 
         Box box = new Box(1f, 1f, 1f);
         geom = makeShape("Box", box, ColorRGBA.Blue);
         rootNode.attachChild(geom);
 
-        System.out.println(cam.getWidth() + " x " + cam.getHeight());
+        inputManager.addMapping("toggleUI", new KeyTrigger(KeyInput.KEY_SPACE));
+        inputManager.addListener((ActionListener) (name, isPressed, tpf) -> {
+            if (isPressed) {
+                boolean enabled = imGuiState.isEnabled();
+                imGuiState.setEnabled(!enabled);
+            }
+        }, "toggleUI");
     }
 
     private Geometry makeShape(String name, Mesh mesh, ColorRGBA color) {

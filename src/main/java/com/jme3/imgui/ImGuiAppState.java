@@ -4,6 +4,9 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.input.InputManager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Standard jMonkeyEngine AppState interface wrapper for ImGui integration.
  * Automatically wires up runtime lifecycles, lifecycle setups, raw input hooks,
@@ -13,36 +16,27 @@ import com.jme3.input.InputManager;
  */
 public class ImGuiAppState extends BaseAppState {
 
-    private final ImGuiManager manager = new ImGuiManager();
-    private final JmeImGui imgui = new JmeImGui();
-    private final JmeImGuiInputListener imguiInput = new JmeImGuiInputListener();
+    private JmeImGui imgui;
+    private final JmeImGuiConfig cfg;
+    private final List<ImGuiWindow> windows = new ArrayList<>();
+    private final JmeImGuiInputListener inputSystem = new JmeImGuiInputListener();
+
     private InputManager inputManager;
 
-    private boolean useGlfwBackend = false;
-
     /**
-     * Creates an ImGui AppState using the default custom input routing layer.
-     */
-    public ImGuiAppState() {
-    }
-
-    /**
-     * Creates an ImGui AppState with an explicit option
-     * to use native window platform backends.
+     * Creates an ImGui AppState with a custom configuration.
      *
-     * @param useGlfwBackend True to leverage native GLFW platform integrations.
+     * @param cfg configuration options for ImGui initialization
      */
-    public ImGuiAppState(boolean useGlfwBackend) {
-        this.useGlfwBackend = useGlfwBackend;
+    public ImGuiAppState(JmeImGuiConfig cfg) {
+        this.cfg = cfg;
     }
 
     @Override
     protected void initialize(Application app) {
         // Bootstrap ImGui context and graphics pipeline
-        JmeImGuiConfig cfg = new JmeImGuiConfig();
-        cfg.setUseGlfwBackend(useGlfwBackend);
-
-        imgui.init(app, cfg);
+        imgui = new JmeImGui();
+        imgui.init(app.getContext(), app.getGuiViewPort(), cfg);
         this.inputManager = app.getInputManager();
     }
 
@@ -53,29 +47,46 @@ public class ImGuiAppState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-        inputManager.addRawInputListener(imguiInput);
+        inputManager.addRawInputListener(inputSystem);
     }
 
     @Override
     protected void onDisable() {
-        inputManager.removeRawInputListener(imguiInput);
+        inputManager.removeRawInputListener(inputSystem);
     }
 
     @Override
     public void postRender() {
-        // Ensure UI commands are rendered at the final
-        // layer of the hardware execution pipeline
-        manager.render(imgui);
+        imgui.startFrame();
+        try {
+            for (ImGuiWindow window : windows) {
+                if (window.isVisible()) {
+                    window.render();
+                }
+            }
+        } finally {
+            imgui.endFrame();
+        }
     }
 
     /**
-     * Returns the master manager instance responsible
-     * for tracking UI state delegates.
+     * Registers a window panel into the
+     * active update/rendering pipeline.
      *
-     * @return The active ImGuiManager.
+     * @param window The {@link ImGuiWindow} instance to manage.
      */
-    public ImGuiManager getManager() {
-        return manager;
+    public void addWindow(ImGuiWindow window) {
+        windows.add(window);
+    }
+
+    /**
+     * Removes a window panel from the active pipeline,
+     * stopping its rendering layout updates.
+     *
+     * @param window The {@link ImGuiWindow} instance to remove.
+     */
+    public void removeWindow(ImGuiWindow window) {
+        windows.remove(window);
     }
 
 }

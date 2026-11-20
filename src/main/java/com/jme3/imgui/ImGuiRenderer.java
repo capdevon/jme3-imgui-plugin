@@ -92,10 +92,6 @@ public abstract class ImGuiRenderer {
         return initialized;
     }
 
-    protected final ImGuiPlatformBackend getPlatform() {
-        return platform;
-    }
-
     private void checkInitialized() {
         if (!initialized) {
             throw new IllegalStateException("ImGuiRenderer is not initialized");

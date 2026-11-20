@@ -1,6 +1,5 @@
 package com.jme3.imgui;
 
-import com.jme3.app.Application;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.ViewPort;
 import com.jme3.system.AppSettings;
@@ -12,6 +11,7 @@ import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
+import imgui.internal.ImGuiContext;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,11 +27,9 @@ public class JmeImGui {
 
     private static final Logger logger = Logger.getLogger(JmeImGui.class.getName());
 
-    private static final float DEFAULT_FPS = 1f / 60f; // 60 FPS target
-
-    private JmeContext context;
     private ViewPort viewPort;
 
+    private ImGuiContext context;
     private ImGuiImplGl3 imGuiGl3;
     private ImGuiImplGles3 imGuiGles3;
     private ImGuiPlatformBackend platformBackend;
@@ -39,35 +37,20 @@ public class JmeImGui {
     private boolean initialized = false;
 
     /**
-     * Initializes ImGui using custom configuration and the application's GUI ViewPort.
-     *
-     * @param app the jME application instance
-     * @param cfg configuration options for ImGui initialization
-     */
-    public void init(Application app, JmeImGuiConfig cfg) {
-        init(app.getContext(), app.getGuiViewPort(), cfg);
-    }
-
-    /**
      * Initializes ImGui context, input backend, and renderer interface.
      *
-     * @param context  the jME context (must be an instance of {@link LwjglWindow})
-     * @param viewPort the main viewport for display metrics
-     * @param cfg      configuration options for ImGui initialization
-     * @throws IllegalStateException if the context is not an instance of {@link LwjglWindow}
+     * @param jmeContext the jME context (must be an instance of {@link LwjglWindow})
+     * @param viewPort   the main viewport for display metrics
+     * @param cfg        configuration options for ImGui initialization
      */
-    public void init(JmeContext context, ViewPort viewPort, JmeImGuiConfig cfg) {
-        if (!(context instanceof LwjglWindow)) {
-            throw new IllegalStateException("JmeImGui requires a context of type LwjglWindow.");
-        }
+    public void init(JmeContext jmeContext, ViewPort viewPort, JmeImGuiConfig cfg) {
         if (initialized) {
             throw new IllegalStateException("JmeImGui is already initialized");
         }
         this.viewPort = viewPort;
-        this.context = context;
 
         // Bootstrap requested windowing abstractions
-        LwjglWindow window = (LwjglWindow) context;
+        LwjglWindow window = (LwjglWindow) jmeContext;
 
         if (cfg.isUseGlfwBackend()) {
             platformBackend = new ImGuiGlfwBackend(window);
@@ -76,11 +59,11 @@ public class JmeImGui {
             platformBackend = new ImGuiSdlBackend(window);
             logger.log(Level.INFO, "ImGui: Using SDL3 Platform Backend");
 
-            AppSettings settings = context.getSettings();
+            AppSettings settings = jmeContext.getSettings();
             useGles3Renderer = JmeGraphicsApi.forRenderer(settings.getRenderer()) == JmeGraphicsApi.OPENGL_ES;
         }
 
-        ImGui.createContext();
+        this.context = ImGui.createContext();
         applyConfig(cfg);
         platformBackend.init();
         initImGuiRenderer();
@@ -138,40 +121,8 @@ public class JmeImGui {
         }
         platformBackend.newFrame();
 
-        ImGuiIO io = ImGui.getIO();
-
         Camera cam = viewPort.getCamera();
-        int displayW = cam.getWidth();
-        int displayH = cam.getHeight();
-        io.setDisplaySize(displayW, displayH);
-
-        // --------------------------------------------------------------------
-        // jME 3.9.0-stable:
-        //     Use fixed framebuffer scale (1.0).
-        //
-        // jME 3.10+:
-        //     Uncomment the HiDPI framebuffer scale calculation below.
-        //     Comment out the fixed scale assignment.
-        // --------------------------------------------------------------------
-
-        // Framebuffer scale (monitor HiDPI/Retina)
-//        float fbW = viewPort.getRenderTargetWidth();
-//        float fbH = viewPort.getRenderTargetHeight();
-//
-//        float fbScaleX = Math.max(Math.round(fbW / displayW), 1);
-//        float fbScaleY = Math.max(Math.round(fbH / displayH), 1);
-//        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
-
-//        float fbScaleX = 1f;
-//        float fbScaleY = 1f;
-//        io.setDisplayFramebufferScale(fbScaleX, fbScaleY);
-
-        // Delta time handling with strict bounds check to prevent UI jumps
-        float tpf = context.getTimer().getTimePerFrame();
-        if (tpf <= 0.0f) {
-            tpf = DEFAULT_FPS;
-        }
-        io.setDeltaTime(Math.min(tpf, 0.1f));
+        ImGui.getIO().setDisplaySize(cam.getWidth(), cam.getHeight());
 
         ImGui.newFrame();
     }
@@ -214,7 +165,7 @@ public class JmeImGui {
             imGuiGl3.shutdown();
         }
         platformBackend.dispose();
-        ImGui.destroyContext();
+        ImGui.destroyContext(context);
     }
 
     /**
