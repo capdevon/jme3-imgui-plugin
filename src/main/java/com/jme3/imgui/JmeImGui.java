@@ -28,7 +28,6 @@ public class JmeImGui {
     private static final Logger logger = Logger.getLogger(JmeImGui.class.getName());
 
     private static final float DEFAULT_FPS = 1f / 60f; // 60 FPS target
-    private static final String ANGLE_GLES = "ANGLE_GLES3";
 
     private JmeContext context;
     private ViewPort viewPort;
@@ -61,6 +60,9 @@ public class JmeImGui {
         if (!(context instanceof LwjglWindow)) {
             throw new IllegalStateException("JmeImGui requires a context of type LwjglWindow.");
         }
+        if (initialized) {
+            throw new IllegalStateException("JmeImGui is already initialized");
+        }
         this.viewPort = viewPort;
         this.context = context;
 
@@ -75,7 +77,7 @@ public class JmeImGui {
             logger.log(Level.INFO, "ImGui: Using SDL3 Platform Backend");
 
             AppSettings settings = context.getSettings();
-            useGles3Renderer = settings.getRenderer().equals(ANGLE_GLES);
+            useGles3Renderer = JmeGraphicsApi.forRenderer(settings.getRenderer()) == JmeGraphicsApi.OPENGL_ES;
         }
 
         ImGui.createContext();
@@ -127,9 +129,7 @@ public class JmeImGui {
      * update/render loop, before defining any ImGui UI.
      */
     public void startFrame() {
-        if (!initialized) {
-            return;
-        }
+        checkInitialized();
 
         if (useGles3Renderer) {
             imGuiGles3.newFrame();
@@ -181,9 +181,7 @@ public class JmeImGui {
      * Call this after defining all ImGui UI elements for the frame.
      */
     public void endFrame() {
-        if (!initialized) {
-            return;
-        }
+        checkInitialized();
 
         try {
             ImGui.render();
@@ -195,10 +193,9 @@ public class JmeImGui {
                 imGuiGl3.renderDrawData(ImGui.getDrawData());
             }
 
-            if (platformBackend.supportsViewports()) {
-                // TODO: not ported — multi-viewport (ImGui_ImplSDL3_InitMultiViewportSupport) requires C function pointers.
-                platformBackend.renderPlatformWindows();
-            }
+            // TODO: not ported — multi-viewport (ImGui_ImplSDL3_InitMultiViewportSupport) requires C function pointers.
+            platformBackend.renderPlatformWindows();
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -226,6 +223,15 @@ public class JmeImGui {
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Checks if ImGui has been successfully initialized.
+     */
+    private void checkInitialized() {
+        if (!initialized) {
+            throw new IllegalStateException("JmeImGui is not initialized");
         }
     }
 
