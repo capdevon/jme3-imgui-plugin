@@ -17,11 +17,10 @@ java {
 
 ext {
 //    jmeVersion = '3.9.0-stable'
-    jmeVersion = '3.10.0-beta1'
+    jmeVersion = '3.10.0-beta3'
     imguiVersion = '1.92.0'
 
-    lwjglVersion = '3.3.6'
-    enableGLES = jmeVersion.startsWith('3.9')
+//    lwjglVersion = '3.4.3'
 }
 
 repositories {
@@ -44,20 +43,24 @@ dependencies {
     runtimeOnly "io.github.spair:imgui-java-natives-linux:${imguiVersion}"
     runtimeOnly "io.github.spair:imgui-java-natives-macos:${imguiVersion}"
 
-    if (enableGLES) {
-
-        implementation "org.lwjgl:lwjgl-opengles:${lwjglVersion}"
-        implementation "org.lwjgl:lwjgl-egl:${lwjglVersion}"
-
-        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-windows"
-        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-windows-arm64"
-
-        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-linux"
-        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-linux-arm64"
-
-        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-macos"
-        runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-macos-arm64"
-    }
+//    implementation "org.lwjgl:lwjgl-sdl:${lwjglVersion}"
+//
+//    runtimeOnly "org.lwjgl:lwjgl-sdl:${lwjglVersion}:natives-windows"
+//    runtimeOnly "org.lwjgl:lwjgl-sdl:${lwjglVersion}:natives-windows-arm64"
+//    runtimeOnly "org.lwjgl:lwjgl-sdl:${lwjglVersion}:natives-linux"
+//    runtimeOnly "org.lwjgl:lwjgl-sdl:${lwjglVersion}:natives-linux-arm64"
+//    runtimeOnly "org.lwjgl:lwjgl-sdl:${lwjglVersion}:natives-macos"
+//    runtimeOnly "org.lwjgl:lwjgl-sdl:${lwjglVersion}:natives-macos-arm64"
+//
+//    implementation "org.lwjgl:lwjgl-opengles:${lwjglVersion}"
+//    implementation "org.lwjgl:lwjgl-egl:${lwjglVersion}"
+//
+//    runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-windows"
+//    runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-windows-arm64"
+//    runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-linux"
+//    runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-linux-arm64"
+//    runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-macos"
+//    runtimeOnly "org.lwjgl:lwjgl-opengles:${lwjglVersion}:natives-macos-arm64"
 }
 
 application {
