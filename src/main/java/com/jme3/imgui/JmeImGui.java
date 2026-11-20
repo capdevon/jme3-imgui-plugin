@@ -183,22 +183,17 @@ public class JmeImGui {
     public void endFrame() {
         checkInitialized();
 
-        try {
-            ImGui.render();
+        ImGui.render();
 
-            // Delegate draw calls to target hardware interface pipeline
-            if (useGles3Renderer) {
-                imGuiGles3.renderDrawData(ImGui.getDrawData());
-            } else {
-                imGuiGl3.renderDrawData(ImGui.getDrawData());
-            }
-
-            // TODO: not ported — multi-viewport (ImGui_ImplSDL3_InitMultiViewportSupport) requires C function pointers.
-            platformBackend.renderPlatformWindows();
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+        // Delegate draw calls to target hardware interface pipeline
+        if (useGles3Renderer) {
+            imGuiGles3.renderDrawData(ImGui.getDrawData());
+        } else {
+            imGuiGl3.renderDrawData(ImGui.getDrawData());
         }
+
+        // TODO: not ported — multi-viewport (ImGui_ImplSDL3_InitMultiViewportSupport) requires C function pointers.
+        platformBackend.renderPlatformWindows();
     }
 
     /**
@@ -210,20 +205,16 @@ public class JmeImGui {
             return;
         }
 
-        try {
-            if (useGles3Renderer) {
-                imGuiGles3.shutdown();
-            } else {
-                imGuiGl3.shutdown();
-            }
-            platformBackend.dispose();
-            ImGui.destroyContext();
+        initialized = false;
 
-            initialized = false;
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, e.getMessage(), e);
+        // Cleanup: renderer backend → platform backend → ImGui context
+        if (useGles3Renderer) {
+            imGuiGles3.shutdown();
+        } else {
+            imGuiGl3.shutdown();
         }
+        platformBackend.dispose();
+        ImGui.destroyContext();
     }
 
     /**
