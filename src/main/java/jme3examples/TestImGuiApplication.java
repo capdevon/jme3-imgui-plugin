@@ -19,7 +19,7 @@ public class TestImGuiApplication extends SimpleApplication {
         AppSettings settings = new AppSettings(true);
         settings.setRenderer(AppSettings.LWJGL_OPENGL32);
 //        settings.setRenderer(AppSettings.ANGLE_GLES3);
-        settings.setResolution(640, 480);
+        settings.setResolution(800, 600);
 
         app.setSettings(settings);
         app.setShowSettings(false);
