@@ -15,7 +15,7 @@ public class ImGuiAppState extends BaseAppState {
 
     private final ImGuiManager manager = new ImGuiManager();
     private final JmeImGui imgui = new JmeImGui();
-    private final JmeImGuiInputAdapter imguiInput = new JmeImGuiInputAdapter();
+    private final JmeImGuiInputListener imguiInput = new JmeImGuiInputListener();
     private InputManager inputManager;
 
     private boolean useGlfwBackend = false;
@@ -41,6 +41,7 @@ public class ImGuiAppState extends BaseAppState {
         // Bootstrap ImGui context and graphics pipeline
         JmeImGuiConfig cfg = new JmeImGuiConfig();
         cfg.setUseGlfwBackend(useGlfwBackend);
+        cfg.setEnableViewports(useGlfwBackend);
 
         imgui.init(app, cfg);
         this.inputManager = app.getInputManager();
@@ -53,16 +54,12 @@ public class ImGuiAppState extends BaseAppState {
 
     @Override
     protected void onEnable() {
-        // Link the engine's raw input system to our custom ImGui translation driver
         inputManager.addRawInputListener(imguiInput);
-        inputManager.addJoystickConnectionListener(imguiInput);
     }
 
     @Override
     protected void onDisable() {
-        // Unbind listeners safely to prevent memory leaks or dead inputs upon state detach
         inputManager.removeRawInputListener(imguiInput);
-        inputManager.removeJoystickConnectionListener(imguiInput);
     }
 
     @Override

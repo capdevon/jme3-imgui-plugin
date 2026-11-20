@@ -9,11 +9,10 @@ package com.jme3.imgui;
 public interface ImGuiPlatformBackend {
 
     /**
-     * Initializes the platform backend using the native window context.
-     *
-     * @param windowHandle The OS-specific native window handle pointer.
+     * Initializes the platform backend and maps
+     * any required native OS resources.
      */
-    void init(long windowHandle);
+    void init();
 
     /**
      * Updates the platform backend state

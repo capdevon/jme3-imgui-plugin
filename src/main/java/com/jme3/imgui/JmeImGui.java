@@ -64,10 +64,6 @@ public class JmeImGui {
         }
         this.viewPort = viewPort;
         this.context = context;
-        long windowHandle = ((LwjglWindow) context).getWindowHandle();
-
-        AppSettings settings = context.getSettings();
-        isAngleMode = settings.getRenderer().equals(ANGLE_GLES);
 
         ImGui.createContext();
 
@@ -88,25 +84,38 @@ public class JmeImGui {
         }
 
         // Bootstrap requested windowing abstractions
+        LwjglWindow window = (LwjglWindow) context;
+
         if (cfg.isUseGlfwBackend()) {
-            platformBackend = new ImGuiGlfwBackend();
-            platformBackend.init(windowHandle);
+            platformBackend = new ImGuiGlfwBackend(window);
+            platformBackend.init();
             logger.log(Level.INFO, "ImGui: Using GLFW Platform Backend");
         } else {
-            logger.log(Level.INFO, "ImGui: Using custom JmeImGuiInput (no platform backend)");
+            platformBackend = new ImGuiSdlBackend(window);
+            platformBackend.init();
+            logger.log(Level.INFO, "ImGui: Using SDL3 Platform Backend");
+
+            AppSettings settings = context.getSettings();
+            isAngleMode = settings.getRenderer().equals(ANGLE_GLES);
         }
 
-        // Bootstrap appropriate rendering pipeline based on jME platform configuration
-        if (!isAngleMode) {
-            imGuiGl3 = new ImGuiImplGl3();
-            imGuiGl3.init(getGlslVersion());
-            imGuiGl3.newFrame();
-        } else {
-            imGuiGles3 = new ImGuiImplGles3();
-            imGuiGles3.init();
-            imGuiGles3.newFrame();
-        }
+        initImGuiRenderer();
         initialized = true;
+    }
+
+    private void initImGuiRenderer() {
+        // Bootstrap appropriate rendering pipeline based on jME platform configuration
+        if (isAngleMode) {
+            imGuiGles3 = new ImGuiImplGles3();
+            if (!imGuiGles3.init()) {
+                throw new IllegalStateException("Dear ImGui OpenGL ES 3 renderer backend failed to initialize");
+            }
+        } else {
+            imGuiGl3 = new ImGuiImplGl3();
+            if (!imGuiGl3.init(getGlslVersion())) {
+                throw new IllegalStateException("Dear ImGui OpenGL renderer backend failed to initialize");
+            }
+        }
     }
 
     /**
@@ -117,6 +126,13 @@ public class JmeImGui {
         if (!initialized) {
             return;
         }
+
+        if (isAngleMode) {
+            imGuiGles3.newFrame();
+        } else {
+            imGuiGl3.newFrame();
+        }
+        platformBackend.newFrame();
 
         ImGuiIO io = ImGui.getIO();
 
@@ -148,12 +164,11 @@ public class JmeImGui {
 
         // Delta time handling with strict bounds check to prevent UI jumps
         float tpf = context.getTimer().getTimePerFrame();
-        if (tpf <= 0.0f) tpf = DEFAULT_FPS;
+        if (tpf <= 0.0f) {
+            tpf = DEFAULT_FPS;
+        }
         io.setDeltaTime(Math.min(tpf, 0.1f));
 
-        if (platformBackend != null) {
-            platformBackend.newFrame();
-        }
         ImGui.newFrame();
     }
 
@@ -170,21 +185,20 @@ public class JmeImGui {
             ImGui.render();
 
             // Delegate draw calls to target hardware interface pipeline
-            if (!isAngleMode) {
-                imGuiGl3.renderDrawData(ImGui.getDrawData());
-            } else {
+            if (isAngleMode) {
                 imGuiGles3.renderDrawData(ImGui.getDrawData());
+            } else {
+                imGuiGl3.renderDrawData(ImGui.getDrawData());
             }
 
             // TODO: not ported — multi-viewport (ImGui_ImplSDL3_InitMultiViewportSupport) requires C function pointers.
             // Optional handling for multiple viewports (if enabled in IO flags)
-            if (platformBackend != null && ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
+            if (platformBackend instanceof ImGuiGlfwBackend && ImGui.getIO().hasConfigFlags(ImGuiConfigFlags.ViewportsEnable)) {
                 final long backupWindowPtr = GLFW.glfwGetCurrentContext();
                 ImGui.updatePlatformWindows();
                 ImGui.renderPlatformWindowsDefault();
                 GLFW.glfwMakeContextCurrent(backupWindowPtr);
             }
-
         } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -200,10 +214,7 @@ public class JmeImGui {
         }
 
         try {
-            if (platformBackend != null) {
-                platformBackend.dispose();
-                platformBackend = null;
-            }
+            platformBackend.dispose();
 
             if (isAngleMode) {
                 imGuiGles3.shutdown();
@@ -224,7 +235,7 @@ public class JmeImGui {
      *
      * @return The GLSL version string to use.
      */
-    private String getGlslVersion() {
+    private static String getGlslVersion() {
         return JmeSystem.getPlatform().getOs() == Platform.Os.MacOS ? "#version 150" : "#version 330";
     }
 

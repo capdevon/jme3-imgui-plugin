@@ -45,6 +45,10 @@ public class TestWindow extends ImGuiWindow {
             ImGui.inputText("Text", buffer);
 
             ImGui.checkbox("Check", checked);
+
+            for (int i = 0; i < 25; i++) {
+                ImGui.text("Item " + i);
+            }
         }
         ImGui.end();
     }

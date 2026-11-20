@@ -7,33 +7,28 @@ public class JmeImGuiConfig {
 
     private boolean useGlfwBackend = false;
     private boolean enableDocking = true;
-    private boolean enableViewports = true;
+    private boolean enableViewports = false;
     private String iniFilename = null; // null disables .ini persistence
     private ImGuiTheme.Theme theme = ImGuiTheme.Theme.CLASSIC;
 
-    public JmeImGuiConfig setUseGlfwBackend(boolean useGlfwBackend) {
+    public void setUseGlfwBackend(boolean useGlfwBackend) {
         this.useGlfwBackend = useGlfwBackend;
-        return this;
     }
 
-    public JmeImGuiConfig setEnableDocking(boolean enableDocking) {
+    public void setEnableDocking(boolean enableDocking) {
         this.enableDocking = enableDocking;
-        return this;
     }
 
-    public JmeImGuiConfig setEnableViewports(boolean enableViewports) {
+    public void setEnableViewports(boolean enableViewports) {
         this.enableViewports = enableViewports;
-        return this;
     }
 
-    public JmeImGuiConfig setIniFilename(String iniFilename) {
+    public void setIniFilename(String iniFilename) {
         this.iniFilename = iniFilename;
-        return this;
     }
 
-    public JmeImGuiConfig setTheme(ImGuiTheme.Theme theme) {
+    public void setTheme(ImGuiTheme.Theme theme) {
         this.theme = theme;
-        return this;
     }
 
     boolean isUseGlfwBackend() {
