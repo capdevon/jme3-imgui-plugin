@@ -3,6 +3,7 @@ package jme3examples;
 import com.jme3.imgui.ImGuiWindow;
 import imgui.ImGui;
 import imgui.ImGuiIO;
+import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiMouseButton;
 import imgui.type.ImBoolean;
 import imgui.type.ImString;
@@ -22,7 +23,7 @@ public class TestWindow extends ImGuiWindow {
 
     @Override
     public void render() {
-        ImGui.setNextWindowPos(10, 10);
+        ImGui.setNextWindowPos(10, 10, ImGuiCond.Once);
 //        ImGui.setNextWindowSize(400, 200);
 
         if (ImGui.begin(getId())) {
@@ -44,7 +45,9 @@ public class TestWindow extends ImGuiWindow {
 
             ImGui.inputText("Text", buffer);
 
-            ImGui.checkbox("Check", checked);
+            if (ImGui.checkbox("Check", checked)) {
+                System.out.println(checked.get());
+            }
 
             for (int i = 0; i < 25; i++) {
                 ImGui.text("Item " + i);
