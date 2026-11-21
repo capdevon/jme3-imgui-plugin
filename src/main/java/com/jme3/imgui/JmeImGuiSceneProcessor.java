@@ -25,6 +25,7 @@ public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
     private InputManager inputManager;
 
     private ImGuiRenderer renderer;
+    private JmeImGuiConfig cfg;
     private final List<ImGuiWindow> windows = new ArrayList<>();
     private final JmeImGuiInputListener inputSystem = new JmeImGuiInputListener();
 
@@ -37,17 +38,17 @@ public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
     public JmeImGuiSceneProcessor(Application app, JmeImGuiConfig cfg) {
         this.context = app.getContext();
         this.inputManager = app.getInputManager();
-
-        AppSettings settings = context.getSettings();
-        boolean gles3 = JmeGraphicsApi.forRenderer(settings.getRenderer()) == JmeGraphicsApi.OPENGL_ES;
-        boolean useGlfwBackend = cfg.isUseGlfwBackend();
-
-        renderer = ImGuiRenderer.create((LwjglWindow) context, useGlfwBackend, gles3);
-        renderer.initialize(cfg);
+        this.cfg = cfg;
     }
 
     @Override
     public void onInitialize() {
+        AppSettings settings = context.getSettings();
+        boolean gles3 = JmeGraphicsApi.forRenderer(settings.getRenderer()) == JmeGraphicsApi.OPENGL_ES;
+        boolean useGlfwBackend = false;
+
+        renderer = ImGuiRenderer.create((LwjglWindow) context, useGlfwBackend, gles3);
+        renderer.initialize(cfg);
     }
 
     @Override
