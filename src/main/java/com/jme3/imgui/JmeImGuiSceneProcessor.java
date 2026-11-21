@@ -2,9 +2,6 @@ package com.jme3.imgui;
 
 import com.jme3.app.Application;
 import com.jme3.input.InputManager;
-import com.jme3.post.SceneProcessor;
-import com.jme3.profile.AppProfiler;
-import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.system.AppSettings;
@@ -22,12 +19,10 @@ import java.util.List;
  *
  * @author capdevon
  */
-public class JmeImGuiSceneProcessor implements SceneProcessor {
+public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
 
     private JmeContext context;
     private InputManager inputManager;
-    private boolean initialized = false;
-    private boolean enabled = true;
 
     private ImGuiRenderer renderer;
     private final List<ImGuiWindow> windows = new ArrayList<>();
@@ -52,22 +47,12 @@ public class JmeImGuiSceneProcessor implements SceneProcessor {
     }
 
     @Override
-    public void initialize(RenderManager rm, ViewPort vp) {
-        this.initialized = true;
-
-        if (isEnabled()) {
-            onEnable();
-        }
+    public void onInitialize() {
     }
 
     @Override
     public void reshape(ViewPort vp, int w, int h) {
         // no-op
-    }
-
-    @Override
-    public final boolean isInitialized() {
-        return initialized;
     }
 
     @Override
@@ -102,43 +87,18 @@ public class JmeImGuiSceneProcessor implements SceneProcessor {
     }
 
     @Override
-    public void cleanup() {
-        if (isEnabled()) {
-            onDisable();
-        }
-
+    public void onCleanup() {
         renderer.dispose();
-        initialized = false;
     }
 
     @Override
-    public void setProfiler(AppProfiler profiler) {
-        // no-op
-    }
-
     public void onEnable() {
         inputManager.addRawInputListener(inputSystem);
     }
 
+    @Override
     public void onDisable() {
         inputManager.removeRawInputListener(inputSystem);
-    }
-
-    public final boolean isEnabled() {
-        return enabled;
-    }
-
-    public final void setEnabled(boolean enabled) {
-        if (this.enabled == enabled)
-            return;
-        this.enabled = enabled;
-        if (!isInitialized())
-            return;
-        if (enabled) {
-            onEnable();
-        } else {
-            onDisable();
-        }
     }
 
     /**
