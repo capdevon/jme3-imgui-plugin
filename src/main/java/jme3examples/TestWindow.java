@@ -4,18 +4,18 @@ import com.jme3.imgui.ImGuiWindow;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.flag.ImGuiCond;
-import imgui.flag.ImGuiMouseButton;
 import imgui.type.ImBoolean;
-import imgui.type.ImString;
+import imgui.type.ImInt;
 
 /**
  * @author capdevon
  */
 public class TestWindow extends ImGuiWindow {
 
-    private ImBoolean checked = new ImBoolean(false);
-    private float[] value = new float[]{50f};
-    private ImString buffer = new ImString(32);
+    private final String[] themeOptions = {"Dark", "Light", "Classic"};
+    private final ImInt colorChoice = new ImInt(2);
+
+    private static final ImBoolean SHOW_DEMO_WINDOW = new ImBoolean(false);
 
     public TestWindow() {
         super("Test Window");
@@ -35,24 +35,26 @@ public class TestWindow extends ImGuiWindow {
             ImGui.text("FPS: " + String.format("%.2f", io.getFramerate()));
             ImGui.text("Display=" + io.getDisplaySizeX() + " x " + io.getDisplaySizeY());
             ImGui.text("Mouse= " + io.getMousePosX() + ", " + io.getMousePosY());
-            ImGui.text("MouseDown=" + io.getMouseDown(ImGuiMouseButton.Left));
 
-            if (ImGui.button("Button 1")) {
-                System.out.println("Button Clicked!");
-            }
+            sidebarStyleSection();
 
-            ImGui.sliderFloat("Slider", value, 0f, 100f);
-
-            ImGui.inputText("Text", buffer);
-
-            if (ImGui.checkbox("Check", checked)) {
-                System.out.println(checked.get());
-            }
-
-            for (int i = 0; i < 25; i++) {
-                ImGui.text("Item " + i);
+            ImGui.checkbox("Show Demo Window", SHOW_DEMO_WINDOW);
+            if (SHOW_DEMO_WINDOW.get()) {
+                ImGui.showDemoWindow(SHOW_DEMO_WINDOW);
             }
         }
         ImGui.end();
+    }
+
+    private void sidebarStyleSection() {
+        if (ImGui.combo("Color Theme", colorChoice, themeOptions, themeOptions.length)) {
+            if (colorChoice.get() == 0) {
+                ImGui.styleColorsDark();
+            } else if (colorChoice.get() == 1) {
+                ImGui.styleColorsLight();
+            } else if (colorChoice.get() == 2) {
+                ImGui.styleColorsClassic();
+            }
+        }
     }
 }
