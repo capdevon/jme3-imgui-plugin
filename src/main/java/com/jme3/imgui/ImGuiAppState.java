@@ -4,9 +4,6 @@ import com.jme3.app.Application;
 import com.jme3.app.state.BaseAppState;
 import com.jme3.input.InputManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Standard jMonkeyEngine AppState interface wrapper for ImGui integration.
  * Automatically wires up runtime lifecycles, lifecycle setups, raw input hooks,
@@ -18,7 +15,6 @@ public class ImGuiAppState extends BaseAppState {
 
     private JmeImGui imgui;
     private final JmeImGuiConfig cfg;
-    private final List<ImGuiWindow> windows = new ArrayList<>();
     private final JmeImGuiInputListener inputSystem = new JmeImGuiInputListener();
 
     private InputManager inputManager;
@@ -42,6 +38,7 @@ public class ImGuiAppState extends BaseAppState {
 
     @Override
     protected void cleanup(Application app) {
+        ImGuiWindowManager.clear();
         imgui.dispose();
     }
 
@@ -59,11 +56,7 @@ public class ImGuiAppState extends BaseAppState {
     public void postRender() {
         imgui.startFrame();
         try {
-            for (ImGuiWindow window : windows) {
-                if (window.isVisible()) {
-                    window.render();
-                }
-            }
+            ImGuiWindowManager.render();
         } finally {
             imgui.endFrame();
         }
@@ -76,7 +69,7 @@ public class ImGuiAppState extends BaseAppState {
      * @param window The {@link ImGuiWindow} instance to manage.
      */
     public void addWindow(ImGuiWindow window) {
-        windows.add(window);
+        ImGuiWindowManager.addWindow(window);
     }
 
     /**
@@ -86,7 +79,7 @@ public class ImGuiAppState extends BaseAppState {
      * @param window The {@link ImGuiWindow} instance to remove.
      */
     public void removeWindow(ImGuiWindow window) {
-        windows.remove(window);
+        ImGuiWindowManager.removeWindow(window);
     }
 
 }

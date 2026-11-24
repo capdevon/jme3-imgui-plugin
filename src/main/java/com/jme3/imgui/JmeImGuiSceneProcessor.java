@@ -10,9 +10,6 @@ import com.jme3.system.lwjgl.LwjglWindow;
 import com.jme3.texture.FrameBuffer;
 import imgui.ImGui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * SceneProcessor implementation for Dear ImGui integration into the jMonkeyEngine rendering lifecycle.
  * Manages ImGui context, input routing, and rendering of ImGui windows within the scene graph.
@@ -26,7 +23,6 @@ public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
 
     private ImGuiRenderer renderer;
     private JmeImGuiConfig cfg;
-    private final List<ImGuiWindow> windows = new ArrayList<>();
     private final JmeImGuiInputListener inputSystem = new JmeImGuiInputListener();
 
     /**
@@ -71,11 +67,7 @@ public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
         ImGui.newFrame();
 
         try {
-            for (ImGuiWindow window : windows) {
-                if (window.isVisible()) {
-                    window.render();
-                }
-            }
+            ImGuiWindowManager.render();
         } finally {
             ImGui.render();
             renderer.renderDrawData();
@@ -89,6 +81,7 @@ public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
 
     @Override
     public void onCleanup() {
+        ImGuiWindowManager.clear();
         renderer.dispose();
     }
 
@@ -109,7 +102,7 @@ public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
      * @param window The {@link ImGuiWindow} instance to manage.
      */
     public void addWindow(ImGuiWindow window) {
-        windows.add(window);
+        ImGuiWindowManager.addWindow(window);
     }
 
     /**
@@ -119,7 +112,7 @@ public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
      * @param window The {@link ImGuiWindow} instance to remove.
      */
     public void removeWindow(ImGuiWindow window) {
-        windows.remove(window);
+        ImGuiWindowManager.removeWindow(window);
     }
 
 }
