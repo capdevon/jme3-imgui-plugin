@@ -5,7 +5,7 @@
 [![Dear ImGui](https://img.shields.io/badge/Dear%20ImGui-1.92.0-brightgreen.svg)](https://github.com/ocornut/imgui)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](LICENSE)
 
-An [ImGui-Java](https://github.com/SpaiR/imgui-java) integration plugin for [jMonkeyEngine3](https://jmonkeyengine.org/), providing fast and flexible immediate-mode user interfaces for debugging, tooling, and editor development.
+An [ImGui-Java](https://github.com/SpaiR/imgui-java) integration plugin for [jMonkeyEngine3](https://github.com/jMonkeyEngine/jmonkeyengine), providing fast and flexible immediate-mode user interfaces for debugging, tooling, and editor development.
 
 ## 🚀 Features
 
