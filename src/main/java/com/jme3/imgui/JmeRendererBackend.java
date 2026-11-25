@@ -1,6 +1,6 @@
 package com.jme3.imgui;
 
-public enum JmeGraphicsApi {
+public enum JmeRendererBackend {
 
     OPENGL,
     OPENGL_ES;
@@ -15,13 +15,13 @@ public enum JmeGraphicsApi {
      * @return the matching backend
      * @throws IllegalStateException if the renderer is unsupported
      */
-    public static JmeGraphicsApi forRenderer(String jmeRenderer) {
+    public static JmeRendererBackend forRenderer(String jmeRenderer) {
 
         if (jmeRenderer != null) {
             if (jmeRenderer.startsWith(LWJGL_OPENGL)) {
                 return OPENGL;
             }
-            if (ANGLE_GLES3.equals(jmeRenderer)) {
+            if (jmeRenderer.equals(ANGLE_GLES3)) {
                 return OPENGL_ES;
             }
         }

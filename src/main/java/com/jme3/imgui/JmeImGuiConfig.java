@@ -9,7 +9,8 @@ public class JmeImGuiConfig {
     private boolean enableDocking = true;
     private boolean enableViewports = true;
     private String iniFilename = null; // null disables .ini persistence
-    private ImGuiTheme.Theme theme = ImGuiTheme.Theme.CLASSIC;
+    private FontPreset fontPreset = FontPreset.DEFAULT;
+    private float fontSize = 14.0f;
 
     public void setUseGlfwBackend(boolean useGlfwBackend) {
         this.useGlfwBackend = useGlfwBackend;
@@ -27,8 +28,20 @@ public class JmeImGuiConfig {
         this.iniFilename = iniFilename;
     }
 
-    public void setTheme(ImGuiTheme.Theme theme) {
-        this.theme = theme;
+    public void setFontPreset(FontPreset fontPreset) {
+        this.fontPreset = fontPreset;
+    }
+
+    public void setFontSize(float fontSize) {
+        this.fontSize = fontSize;
+    }
+
+    FontPreset getFontPreset() {
+        return fontPreset;
+    }
+
+    float getFontSize() {
+        return fontSize;
     }
 
     boolean isUseGlfwBackend() {
@@ -47,7 +60,4 @@ public class JmeImGuiConfig {
         return iniFilename;
     }
 
-    ImGuiTheme.Theme getTheme() {
-        return theme;
-    }
 }

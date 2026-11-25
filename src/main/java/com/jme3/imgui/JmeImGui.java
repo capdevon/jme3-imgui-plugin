@@ -54,7 +54,7 @@ public class JmeImGui {
             logger.log(Level.INFO, "ImGui: Using SDL3 Platform Backend");
 
             AppSettings settings = jmeContext.getSettings();
-            useGles3Renderer = JmeGraphicsApi.forRenderer(settings.getRenderer()) == JmeGraphicsApi.OPENGL_ES;
+            useGles3Renderer = JmeRendererBackend.forRenderer(settings.getRenderer()) == JmeRendererBackend.OPENGL_ES;
         }
 
         this.context = ImGui.createContext();
@@ -79,11 +79,7 @@ public class JmeImGui {
             io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         }
 
-        io.getFonts().build();
-
-        if (cfg.getTheme() != null) {
-            ImGuiTheme.apply(cfg.getTheme());
-        }
+        ImGuiFontConfig.initFonts(io, cfg);
     }
 
     private void initImGuiRenderer() {

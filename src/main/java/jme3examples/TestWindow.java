@@ -1,5 +1,6 @@
 package jme3examples;
 
+import com.jme3.imgui.FontAwesomeIcons;
 import com.jme3.imgui.ImGuiWindow;
 import imgui.ImGui;
 import imgui.ImGuiIO;
@@ -13,7 +14,7 @@ import imgui.type.ImInt;
 public class TestWindow extends ImGuiWindow {
 
     private final String[] themeOptions = {"Dark", "Light", "Classic"};
-    private final ImInt colorChoice = new ImInt(2);
+    private final ImInt colorChoice = new ImInt();
 
     private static final ImBoolean SHOW_DEMO_WINDOW = new ImBoolean(false);
 
@@ -27,7 +28,7 @@ public class TestWindow extends ImGuiWindow {
 //        ImGui.setNextWindowSize(400, 200);
 
         if (ImGui.begin(getId())) {
-            ImGui.text("Hello ImGui + jMonkeyEngine!");
+            ImGui.text("Hello ImGui + jMonkeyEngine! " + FontAwesomeIcons.Smile);
             ImGui.separator();
 
             ImGuiIO io = ImGui.getIO();
@@ -40,6 +41,7 @@ public class TestWindow extends ImGuiWindow {
 
             ImGui.checkbox("Show Demo Window", SHOW_DEMO_WINDOW);
             if (SHOW_DEMO_WINDOW.get()) {
+                ImGui.setNextWindowPos(ImGui.getMainViewport().getPosX() + 200, ImGui.getMainViewport().getPosY() + 200, ImGuiCond.Once);
                 ImGui.showDemoWindow(SHOW_DEMO_WINDOW);
             }
         }

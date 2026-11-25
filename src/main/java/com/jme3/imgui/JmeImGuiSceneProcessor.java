@@ -40,7 +40,7 @@ public class JmeImGuiSceneProcessor extends AbstractSceneProcessor {
     @Override
     public void onInitialize() {
         AppSettings settings = context.getSettings();
-        boolean gles3 = JmeGraphicsApi.forRenderer(settings.getRenderer()) == JmeGraphicsApi.OPENGL_ES;
+        boolean gles3 = JmeRendererBackend.forRenderer(settings.getRenderer()) == JmeRendererBackend.OPENGL_ES;
         boolean useGlfwBackend = false;
 
         renderer = ImGuiRenderer.create((LwjglWindow) context, useGlfwBackend, gles3);

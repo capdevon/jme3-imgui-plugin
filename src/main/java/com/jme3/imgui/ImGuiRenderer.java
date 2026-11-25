@@ -82,9 +82,9 @@ public abstract class ImGuiRenderer {
         // Cleanup: renderer backend → platform backend → ImGui context
         shutdownRendererBackend();
         platform.dispose();
-        clearRendererBackend();
         ImGui.destroyContext(context);
 
+        clearRendererBackend();
         context = null;
     }
 
@@ -114,11 +114,7 @@ public abstract class ImGuiRenderer {
             io.addConfigFlags(ImGuiConfigFlags.ViewportsEnable);
         }
 
-        io.getFonts().build();
-
-        if (cfg.getTheme() != null) {
-            ImGuiTheme.apply(cfg.getTheme());
-        }
+        ImGuiFontConfig.initFonts(io, cfg);
     }
 
     // Graphics-side hooks

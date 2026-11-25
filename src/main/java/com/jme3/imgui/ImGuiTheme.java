@@ -8,6 +8,7 @@ import imgui.ImGuiStyle;
  *
  * @author capdevon
  */
+@Deprecated
 public final class ImGuiTheme {
 
     /**
