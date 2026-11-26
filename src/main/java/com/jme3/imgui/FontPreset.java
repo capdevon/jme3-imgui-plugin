@@ -11,7 +11,6 @@ public enum FontPreset {
 
     DEFAULT("Built-in ImGui Font (ProggyClean)"),
     ROBOTO("Roboto-Regular.ttf"),
-    OPEN_SANS("OpenSans-Regular.ttf"),
     JETBRAINS_MONO("JetBrainsMono-Regular.ttf"),
     INTER("Inter-Regular.ttf");
 
